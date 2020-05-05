@@ -1,0 +1,14 @@
+#resultados {
+  display: none;
+  margin: 20px;
+}
+#borrar {
+  margin-left: 5px;
+}
+#retro {
+  margin-left: 10px;
+  display: inline;
+}
+#loading {
+  display: none;
+}

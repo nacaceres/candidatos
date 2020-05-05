@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <title>Candidatos</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">Monitores</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarTogglerDemo02"
+        aria-controls="navbarTogglerDemo02"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <form class="form-inline my-2 my-lg-0" onsubmit="return false">
+          <input
+            class="form-control mr-sm-2"
+            id="nombre"
+            size="45"
+            type="search"
+            placeholder="Ingresa el nombre del estudiante"
+            aria-label="Search"
+          />
+        </form>
+        <button
+          class="btn btn-outline-success my-2 my-sm-0"
+          type="button"
+          id="myBtn"
+          onclick="search()"
+        >
+          Buscar
+        </button>
+        <button
+          class="btn btn-outline-danger my-2 my-sm-0"
+          onclick="location.reload()"
+          id="borrar"
+        >
+          Borrar Consultas
+        </button>
+      </div>
+    </nav>
+    <span id="retro" style="display: inline;">
+      <span id="loading">
+        <img src="loading.gif" alt="Loading" style="width: 75; height: 75px;" />
+      </span>
+    </span>
+    <div id="resultados">
+      <table class="table table-striped" style="text-align: center;">
+        <thead>
+          <tr>
+            <th scope="col"># Consulta</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Aprobó/Reprobó</th>
+            <th scope="col">Nota Obtenida</th>
+            <th scope="col">Presentó Prueba Senecode</th>
+            <th scope="col">Resultado Prueba</th>
+          </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+      </table>
+    </div>
+    <script>
+      var input = document.getElementById("nombre");
+      input.addEventListener("keyup", function (event) {
+        if (event.keyCode === 13) {
+          document.getElementById("myBtn").click();
+          event.preventDefault();
+        }
+      });
+      var HttpClient = function () {
+        this.get = function (aUrl, aCallback) {
+          var anHttpRequest = new XMLHttpRequest();
+          anHttpRequest.onreadystatechange = function () {
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+              aCallback(anHttpRequest.responseText);
+          };
+          anHttpRequest.open("GET", aUrl, true);
+          anHttpRequest.send(null);
+        };
+      };
+      let contador = 0;
+      let indice = 0;
+      primera_consulta = false;
+      function search() {
+        nombre = document.getElementById("nombre").value;
+        if (nombre != "") {
+          nombre = nombre
+            .trim()
+            .toLowerCase()
+            .split("á")
+            .join("a")
+            .split("é")
+            .join("e")
+            .split("í")
+            .join("i")
+            .split("ó")
+            .join("o")
+            .split("ú")
+            .join("u")
+            .split(" ")
+            .join(",");
+          document.getElementById("retro").firstChild.data =
+            "Estamos realizando la consulta";
+          document.getElementById("loading").style.display = "inline";
+          let client = new HttpClient();
+          console.log(nombre);
+          //Genera la peticion al servidor
+          client.get(
+            "https://script.google.com/macros/s/AKfycbyqQIjvJlCueFZnTQU5ERSCdA9oNShmfuSoaEuTReaP_ZaLxkik/exec?nombre=" +
+              nombre,
+            function (response) {
+              let resp = JSON.parse(response);
+              console.log(response);
+              if (resp.ERRROR === undefined && resp.length > 0) {
+                if (!primera_consulta) {
+                  primera_consulta = true;
+                  document.getElementById("resultados").style.display = "block";
+                }
+                for (let i = 0; i < resp.length; i++) {
+                  let actual = resp[i];
+                  let tabla = document.getElementById("tabla");
+                  let fila = tabla.insertRow(indice);
+                  fila.insertCell(0).innerHTML = contador;
+                  fila.insertCell(1).innerHTML = actual.nombre;
+                  fila.insertCell(2).innerHTML = actual.aprobo;
+                  fila.insertCell(3).innerHTML = actual.nota;
+                  fila.insertCell(4).innerHTML = actual.prueba;
+                  fila.insertCell(5).innerHTML = actual.resultado;
+                  document.getElementById("nombre").value = "";
+                  document.getElementById("loading").style.display = "none";
+                  document.getElementById("retro").firstChild.data =
+                    "Los resultados quedaron bajo el # Consulta: " + contador;
+                }
+                indice += resp.length;
+                contador += 1;
+              } else {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("retro").firstChild.data =
+                  "No se encontraron estudiantes con el nombre suministrado";
+              }
+            }
+          );
+        } else {
+          document.getElementById("retro").firstChild.data =
+            "Por favor ingresa el nombre de un estudiante!";
+        }
+      }
+    </script>
+  </body>
+</html>
