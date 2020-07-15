@@ -81,7 +81,9 @@
           <tr>
             <th scope="col"># Consulta</th>
             <th scope="col">Nombre</th>
-            <th scope="col">Aprobó/Reprobó</th>
+            <th scope="col">Código</th>
+            <th scope="col">Login</th>
+            <th scope="col">Curso</th>
             <th scope="col">Nota Obtenida</th>
             <th scope="col">Presentó Prueba Senecode</th>
             <th scope="col">Resultado Prueba</th>
@@ -153,10 +155,12 @@
                   let fila = tabla.insertRow(indice);
                   fila.insertCell(0).innerHTML = contador;
                   fila.insertCell(1).innerHTML = actual.nombre;
-                  fila.insertCell(2).innerHTML = actual.aprobo;
-                  fila.insertCell(3).innerHTML = actual.nota;
-                  fila.insertCell(4).innerHTML = actual.prueba;
-                  fila.insertCell(5).innerHTML = actual.resultado;
+                  fila.insertCell(2).innerHTML = actual.codigo;
+                  fila.insertCell(3).innerHTML = actual.login;
+                  fila.insertCell(4).innerHTML = actual.curso;
+                  fila.insertCell(5).innerHTML = actual.nota;
+                  fila.insertCell(6).innerHTML = actual.prueba;
+                  fila.insertCell(7).innerHTML = actual.resultado;
                   document.getElementById("nombre").value = "";
                   document.getElementById("loading").style.display = "none";
                   document.getElementById("retro").firstChild.data =
